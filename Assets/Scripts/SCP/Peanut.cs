@@ -8,7 +8,7 @@ public class Peanut : SCP {
 
     public bool IsSeen { get; set; } = false;
     public float speed;
-    public Collider col;
+    public CapsuleCollider col;
     private Grid grid;
     public Vector3 tryingToMoveTo;
 
@@ -23,34 +23,63 @@ public class Peanut : SCP {
     }
 
     void Update(){
-    }
-
-    private void FixedUpdate() {
         CanBeSeen();
         Move();
     }
 
-
-    private void CanBeSeen() {
+    void CanBeSeen() {
         
         bool inCamera = false;
         bool LOS = false;
-        
 
+        List<Vector3> pointsToCheck = new List<Vector3> {
+            //CENTER
+            transform.position,
+            //TOP
+            new Vector3(transform.position.x, transform.position.y + (col.height / 2), transform.position.z),
+            //LEFT
+            new Vector3(transform.position.x - col.radius, transform.position.y, transform.position.z),
+            //RIGHT
+            new Vector3(transform.position.x + col.radius, transform.position.y, transform.position.z),
+            //LEFT-KNEE
+            new Vector3(transform.position.x - col.radius, transform.position.y - (col.height / 4), transform.position.z),
+            //RIGHT-KNEE
+            new Vector3(transform.position.x + col.radius, transform.position.y - (col.height / 4), transform.position.z),
+            //LEFT-SHOULDER
+            new Vector3(transform.position.x - col.radius, transform.position.y + (col.height / 4), transform.position.z),
+            //RIGHT-SHOULDER
+            new Vector3(transform.position.x + col.radius, transform.position.y + (col.height / 4), transform.position.z),
+            //LOWER-CHEST
+            new Vector3(transform.position.x, transform.position.y + (col.height / 6), transform.position.z),
+            //BELLY
+            new Vector3(transform.position.x, transform.position.y - (col.height / 6), transform.position.z),
+            //UPPER-CHEST
+            new Vector3(transform.position.x, transform.position.y + (col.height / 3), transform.position.z),
+            //PP
+            new Vector3(transform.position.x, transform.position.y - (col.height / 3), transform.position.z)
+        };
+
+
+        /*
         Plane[] planes = GeometryUtility.CalculateFrustumPlanes(Camera.main);
         if (GeometryUtility.TestPlanesAABB(planes, col.bounds)) {
             inCamera = true;
-        }
+        }*/
 
-        RaycastHit hit;
-        Vector3 direction = transform.position - GameManager.gm.player.transform.position;
-        if (Physics.Raycast(GameManager.gm.player.transform.position, direction, out hit, Mathf.Infinity, GameManager.gm.peanut)) {
-            //print(hit.collider.gameObject.name);
-            if (hit.collider.gameObject.layer == 9) {
-                Debug.DrawRay(GameManager.gm.player.transform.position, direction, Color.green);
-                LOS = true;
-            } else {
-                Debug.DrawRay(GameManager.gm.player.transform.position, direction, Color.red);
+        foreach (Vector3 v in pointsToCheck) {
+            if (IsPointOnScreen(v)) {
+                inCamera = true;
+            }
+            RaycastHit hit;
+            Vector3 direction = v - GameManager.gm.player.transform.position;
+            if (Physics.Raycast(GameManager.gm.player.transform.position, direction, out hit, Mathf.Infinity, GameManager.gm.peanut)) {
+                //print(hit.collider.gameObject.name);
+                if (hit.collider.gameObject.layer == 9) {
+                    Debug.DrawRay(GameManager.gm.player.transform.position, direction, Color.green);
+                    LOS = true;
+                } else {
+                    Debug.DrawRay(GameManager.gm.player.transform.position, direction, Color.red);
+                }
             }
         }
         //print("In camera: " + inCamera);
@@ -61,6 +90,14 @@ public class Peanut : SCP {
         } else {
             IsSeen = false;
         }
+    }
+
+    bool IsPointOnScreen(Vector3 v) {
+        Vector3 screenPoint = Camera.main.WorldToViewportPoint(v);
+        if (screenPoint.z > 0 && screenPoint.x > 0 && screenPoint.x < 1 && screenPoint.y > 0 && screenPoint.y < 1) {
+            return true;
+        }
+        return false;
     }
 
 
@@ -94,7 +131,7 @@ public class Peanut : SCP {
         }
     }
 
-    public void Move() {
+    void Move() {
         if (!IsSeen && grid.FinalPath != null) {
             MoveLerp();
         }
