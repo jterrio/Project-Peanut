@@ -12,7 +12,7 @@ public class Sprint : MonoBehaviour
     public double staminaRefillRate = .03;
     public double staminaRequireToRun = 20;
     [Tooltip("Seconds")]
-    public int timeTillStaminaRegen = 3;
+    public float timeTillStaminaRegen = 3f;
     private double maxStamina;
     private bool isRunning = false;
     private bool justStopped = false;
@@ -46,6 +46,9 @@ public class Sprint : MonoBehaviour
                     characterController.speed = mainSpeed;
                     isRunning = false;
                     justStopped = true;
+                    if (!(timer == null)) {
+                        RestartStamTimer();
+                    }
                 }
             } else {
                 //Set to sprint speed
@@ -62,6 +65,9 @@ public class Sprint : MonoBehaviour
                     characterController.speed = mainSpeed;
                     isRunning = false;
                     justStopped = true;
+                    if (!(timer == null)) {
+                        RestartStamTimer();
+                    }
                 }
             }
         }
@@ -73,29 +79,74 @@ public class Sprint : MonoBehaviour
     public void UpdateStamina(float mainSpeed) {
         if (justStopped && (timer == null)) {
             timer = StartCoroutine(WaitASec(timeTillStaminaRegen));
-        } else if (isRunning && (stamina <= 0)) {
-            stamina = 0;
-            characterController.speed = mainSpeed;
-            isRunning = false;
-            justStopped = true;
-        } else if(isRunning){
-            stamina -= staminaDrainRate;
-        } else {
-            if (stamina > maxStamina) {
-                stamina = maxStamina;
-            } else if (stamina == maxStamina) {
-                // do nothing, stamina fine
+        } else if (justStopped) {
+            //Started Timer just waiting
+            if (isRunning && (stamina <= 0)) {
+                stamina = 0;
+                characterController.speed = mainSpeed;
+                isRunning = false;
+                RestartStamTimer();
+            } else if (isRunning) {
+                stamina -= staminaDrainRate;
             } else {
-                stamina += staminaRefillRate;
+                if (stamina > maxStamina) {
+                    stamina = maxStamina;
+                } else if (stamina == maxStamina) {
+                    // do nothing, stamina fine
+                } else {
+                    // do nothing still waiting for cooldown on stamina regen
+                }
+            }
+        }
+        else {
+            //Can Regen Stamina
+            if (isRunning && (stamina <= 0)) {
+                stamina = 0;
+                characterController.speed = mainSpeed;
+                isRunning = false;
+                justStopped = true;
+            } else if (isRunning) {
+                stamina -= staminaDrainRate;
+            } else {
+                if (stamina > maxStamina) {
+                    stamina = maxStamina;
+                } else if (stamina == maxStamina) {
+                    // do nothing, stamina fine
+                } else {
+                    stamina += staminaRefillRate;
+                }
             }
         }
         // Todo: make ui showing stamina
-        Debug.Log(isRunning);
         Debug.Log(stamina);
+
+        //if (justStopped) {
+        //    timer = StartCoroutine(WaitASec(timeTillStaminaRegen));
+        //} else if (isRunning && (stamina <= 0)) {
+        //    stamina = 0;
+        //    characterController.speed = mainSpeed;
+        //    isRunning = false;
+        //    justStopped = true;
+        //} else if(isRunning){
+        //    stamina -= staminaDrainRate;
+        //} else {
+        //    if (stamina > maxStamina) {
+        //        stamina = maxStamina;
+        //    } else if (stamina == maxStamina) {
+        //        // do nothing, stamina fine
+        //    } else {
+        //        stamina += staminaRefillRate;
+        //    }
+        //}
     }
-    private IEnumerator WaitASec(int waitTime) {
+    private IEnumerator WaitASec(float waitTime) {
         yield return new WaitForSeconds(waitTime);
         justStopped = false;
         timer = null;
+    }
+    private void RestartStamTimer() {
+        StopCoroutine(timer);
+        timer = null;
+        timer = StartCoroutine(WaitASec(timeTillStaminaRegen));
     }
 }

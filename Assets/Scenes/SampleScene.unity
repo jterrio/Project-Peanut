@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 235742510}
   - component: {fileID: 235742507}
   - component: {fileID: 235742508}
+  - component: {fileID: 235742509}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -171,6 +172,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
+  runSpeedIncrease: 5
+  toggleSprint: 0
+  Sprint: {fileID: 235742509}
+--- !u!114 &235742509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 235742506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a6aa1114243f844da4fd2fedbd89e31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stamina: 100
+  staminaDrainRate: 0.1
+  staminaRefillRate: 0.03
+  staminaRequireToRun: 20
+  timeTillStaminaRegen: 1
+  characterController: {fileID: 235742508}
 --- !u!136 &235742510
 CapsuleCollider:
   m_ObjectHideFlags: 0
