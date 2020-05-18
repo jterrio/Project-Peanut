@@ -173,8 +173,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   runSpeedIncrease: 5
-  toggleSprint: 0
-  Sprint: {fileID: 235742509}
+  mainSpeed: 0
+  moveState: 0
 --- !u!114 &235742509
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,10 +188,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stamina: 100
-  staminaDrainRate: 0.1
-  staminaRefillRate: 0.03
+  staminaDrainRate: 2.2
+  staminaRefillRate: 0.5
   staminaRequireToRun: 20
   timeTillStaminaRegen: 1
+  toggleSprint: 0
   characterController: {fileID: 235742508}
 --- !u!136 &235742510
 CapsuleCollider:

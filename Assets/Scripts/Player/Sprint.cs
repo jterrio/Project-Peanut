@@ -5,22 +5,30 @@ using UnityEngine;
 public class Sprint : MonoBehaviour
 {
     [Header("Stamina")]
-    public double stamina = 100;
+    public float stamina = 100;
     [Tooltip("Per update call")]
-    public double staminaDrainRate = .1;
+    public float staminaDrainRate = .08f;
     [Tooltip("Per update call")]
-    public double staminaRefillRate = .03;
-    public double staminaRequireToRun = 20;
+    public float staminaRefillRate = 1f;
+    public float staminaRequireToRun = 20;
     [Tooltip("Seconds")]
     public float timeTillStaminaRegen = 3f;
-    private double maxStamina;
-    private bool isRunning = false;
-    private bool justStopped = false;
-    private Coroutine timer;
+    private float maxStamina;
+    public bool toggleSprint = false;
+
+    //COROUTINES FOR SPRINTING
+    private Coroutine sprintRegenCoroutine;
+    private Coroutine sprintDrainCoroutine;
+
     public CharacterController characterController;
 
     void Start() {
         maxStamina = stamina;
+    }
+
+    private void Update() {
+        Sprinting(characterController.speed, characterController.runSpeedIncrease, characterController.mainSpeed);
+        UpdateStamina(characterController.mainSpeed);
     }
 
     /// <summary>
@@ -29,45 +37,27 @@ public class Sprint : MonoBehaviour
     /// <param name="speed">base speed of the character</param>
     /// <param name="runSpeedIncrease">have much more speed the user wants to increase the base walk speed by</param>
     /// <param name="toggleSprint">Determins what type of sprinting the character wants to use</param>
-    public void Sprinting(float speed, float runSpeedIncrease, bool toggleSprint, float mainSpeed) {
-        //Determining if they are standing still
-        if (false) {
-            // todo: determine if they are standing still
+    public void Sprinting(float speed, float runSpeedIncrease, float mainSpeed) {
+        if (toggleSprint) {
+            if (stamina < staminaRequireToRun && Input.GetKeyDown(KeyCode.LeftShift) && characterController.moveState == CharacterController.MovementState.WALK) {
+                // do nothing because you can't start running right now
+            } else if (Input.GetKeyDown(KeyCode.LeftShift) && characterController.moveState == CharacterController.MovementState.WALK) {
+                characterController.speed += runSpeedIncrease;
+                characterController.moveState = CharacterController.MovementState.RUN;
+            } else if (Input.GetKeyDown(KeyCode.LeftShift)) {
+                // You are currently running. So you need to stop running.
+                characterController.speed = mainSpeed;
+                characterController.moveState = CharacterController.MovementState.WALK;
+            }
         } else {
-            //If they want toggleSprint or holdSprint.
-            if (toggleSprint) {
-                if (stamina < staminaRequireToRun && Input.GetKeyDown(KeyCode.LeftShift) && !isRunning)  {
-                    // do nothing because you can't start running right now
-                } else if (Input.GetKeyDown(KeyCode.LeftShift) && !isRunning) {
+            if (Input.GetKeyDown(KeyCode.LeftShift)) {
+                if (stamina > staminaRequireToRun) {
                     characterController.speed += runSpeedIncrease;
-                    isRunning = true;
-                } else if(Input.GetKeyDown(KeyCode.LeftShift)) {
-                    // You are currently running. So you need to stop running.
-                    characterController.speed = mainSpeed;
-                    isRunning = false;
-                    justStopped = true;
-                    if (!(timer == null)) {
-                        RestartStamTimer();
-                    }
+                    characterController.moveState = CharacterController.MovementState.RUN;
                 }
-            } else {
-                //Set to sprint speed
-                if (Input.GetKeyDown(KeyCode.LeftShift)) {
-                    if (stamina > staminaRequireToRun) {
-                        characterController.speed += runSpeedIncrease;
-                        isRunning = true;
-                    } else {
-                        // do nothing because you can't start running right now
-                    }
-                }
-                //Reset speed to original
                 if (Input.GetKeyUp(KeyCode.LeftShift)) {
                     characterController.speed = mainSpeed;
-                    isRunning = false;
-                    justStopped = true;
-                    if (!(timer == null)) {
-                        RestartStamTimer();
-                    }
+                    characterController.moveState = CharacterController.MovementState.WALK;
                 }
             }
         }
@@ -77,76 +67,62 @@ public class Sprint : MonoBehaviour
     /// The goal is for it to update the stamina every tick and equalize and bad values.
     /// </summary>
     public void UpdateStamina(float mainSpeed) {
-        if (justStopped && (timer == null)) {
-            timer = StartCoroutine(WaitASec(timeTillStaminaRegen));
-        } else if (justStopped) {
-            //Started Timer just waiting
-            if (isRunning && (stamina <= 0)) {
-                stamina = 0;
-                characterController.speed = mainSpeed;
-                isRunning = false;
-                RestartStamTimer();
-            } else if (isRunning) {
-                stamina -= staminaDrainRate;
-            } else {
-                if (stamina > maxStamina) {
-                    stamina = maxStamina;
-                } else if (stamina == maxStamina) {
-                    // do nothing, stamina fine
-                } else {
-                    // do nothing still waiting for cooldown on stamina regen
-                }
-            }
+
+        //REGEN
+        if (characterController.moveState != CharacterController.MovementState.RUN && (sprintRegenCoroutine == null) && stamina < maxStamina) {
+            StopDrainCoroutine();
+            sprintRegenCoroutine = StartCoroutine(RegenStamina());
         }
-        else {
-            //Can Regen Stamina
-            if (isRunning && (stamina <= 0)) {
-                stamina = 0;
-                characterController.speed = mainSpeed;
-                isRunning = false;
-                justStopped = true;
-            } else if (isRunning) {
-                stamina -= staminaDrainRate;
-            } else {
-                if (stamina > maxStamina) {
-                    stamina = maxStamina;
-                } else if (stamina == maxStamina) {
-                    // do nothing, stamina fine
-                } else {
-                    stamina += staminaRefillRate;
-                }
-            }
+
+        //DRAIN
+        if(characterController.moveState == CharacterController.MovementState.RUN && stamina > 0 && sprintDrainCoroutine == null) {
+            StopRegenCoroutine();
+            sprintDrainCoroutine = StartCoroutine(DrainStamina());
         }
         // Todo: make ui showing stamina
         Debug.Log(stamina);
+    }
 
-        //if (justStopped) {
-        //    timer = StartCoroutine(WaitASec(timeTillStaminaRegen));
-        //} else if (isRunning && (stamina <= 0)) {
-        //    stamina = 0;
-        //    characterController.speed = mainSpeed;
-        //    isRunning = false;
-        //    justStopped = true;
-        //} else if(isRunning){
-        //    stamina -= staminaDrainRate;
-        //} else {
-        //    if (stamina > maxStamina) {
-        //        stamina = maxStamina;
-        //    } else if (stamina == maxStamina) {
-        //        // do nothing, stamina fine
-        //    } else {
-        //        stamina += staminaRefillRate;
-        //    }
-        //}
+    void StopSprintCoroutines() {
+        StopRegenCoroutine();
+        StopDrainCoroutine();
     }
-    private IEnumerator WaitASec(float waitTime) {
-        yield return new WaitForSeconds(waitTime);
-        justStopped = false;
-        timer = null;
+
+    void StopRegenCoroutine() {
+        if (sprintRegenCoroutine != null) {
+            StopCoroutine(sprintRegenCoroutine);
+            sprintRegenCoroutine = null;
+        }
     }
-    private void RestartStamTimer() {
-        StopCoroutine(timer);
-        timer = null;
-        timer = StartCoroutine(WaitASec(timeTillStaminaRegen));
+
+    void StopDrainCoroutine() {
+        if (sprintDrainCoroutine != null) {
+            StopCoroutine(sprintDrainCoroutine);
+            sprintDrainCoroutine = null;
+        }
+    }
+
+
+    IEnumerator DrainStamina() {
+        while(stamina > 0 && characterController.moveState == CharacterController.MovementState.RUN && characterController.IsMoving()) {
+            yield return new WaitForSeconds(0.1f);
+            stamina -= staminaDrainRate;
+        }
+        if(stamina < 0) {
+            stamina = 0;
+        }
+        sprintDrainCoroutine = null;
+    }
+
+    IEnumerator RegenStamina() {
+        yield return new WaitForSeconds(timeTillStaminaRegen);
+        while(stamina < maxStamina) {
+            yield return new WaitForSeconds(0.1f);
+            stamina += staminaRefillRate;
+        }
+        if(stamina > maxStamina) {
+            stamina = maxStamina;
+        }
+        sprintRegenCoroutine = null;
     }
 }
