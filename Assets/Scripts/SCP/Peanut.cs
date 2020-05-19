@@ -9,8 +9,10 @@ public class Peanut : SCP {
     public bool IsSeen { get; set; } = false;
     public float speed;
     public CapsuleCollider col;
-    private Grid grid;
     public Vector3 tryingToMoveTo;
+    public GameObject target;
+
+    private Coroutine moveLerpCoroutine;
 
 
 
@@ -19,7 +21,6 @@ public class Peanut : SCP {
     void Start(){
         scpID = "173";
         c = Classification.Euclid;
-        grid = GameManager.gm.peanutManager.GetComponent<Grid>();
     }
 
     void Update(){
@@ -59,13 +60,6 @@ public class Peanut : SCP {
             new Vector3(transform.position.x, transform.position.y - (col.height / 3), transform.position.z)
         };
 
-
-        /*
-        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(Camera.main);
-        if (GeometryUtility.TestPlanesAABB(planes, col.bounds)) {
-            inCamera = true;
-        }*/
-
         foreach (Vector3 v in pointsToCheck) {
             if (IsPointOnScreen(v)) {
                 inCamera = true;
@@ -101,42 +95,41 @@ public class Peanut : SCP {
     }
 
 
-    void MoveLerp() {
-        while (grid.FinalPath.Count > 0) {
+    IEnumerator MoveLerp() {
+        yield return new WaitForSeconds(0.1f);
+        List<Vector3> finalPath = GameManager.gm.AI.FindPath(transform.position, target.transform.position);  
+        while (finalPath.Count > 0) {
             float distance = 0f;
             Vector3 current = transform.position;
-            List<Node> temp = new List<Node>(grid.FinalPath);
-            for(int i = 0; i < grid.FinalPath.Count; i++) {
-                float d = Vector3.Distance(current, grid.FinalPath[i].vPosition);
+            List<Vector3> temp = new List<Vector3>(finalPath);
+            for(int i = 0; i < finalPath.Count; i++) {
+                float d = Vector3.Distance(current, finalPath[i]);
                 if(distance + d < speed) {
                     distance += d;
-                    current = grid.FinalPath[i].vPosition;
+                    current = finalPath[i];
                     temp.RemoveAt(0);
                 } else if(distance + d == speed) {
-                    current = grid.FinalPath[i].vPosition;
+                    current = finalPath[i];
                     temp.RemoveAt(0);
                     break;
                 } else {
                     float percentage = (d - ((distance + d) - speed)) / d;
-                    current = Vector3.Lerp(current, grid.FinalPath[i].vPosition, ((percentage - distance) / (distance - d)));
+                    current = Vector3.Lerp(current, finalPath[i], ((percentage - distance) / (distance - d)));
                     temp.RemoveAt(0);
                     break;
                 }
             }
-            grid.FinalPath = null;
-            //print(current);
             transform.LookAt(current);
             transform.position = current;
-            return;
+            break;
         }
+        moveLerpCoroutine = null;
     }
 
     void Move() {
-        if (!IsSeen && grid.FinalPath != null) {
-            MoveLerp();
+        if (!IsSeen && moveLerpCoroutine == null && target != null) {
+            moveLerpCoroutine = StartCoroutine(MoveLerp());
         }
-        //rb.velocity = Vector3.zero;
-        //transform.LookAt(GameManager.gm.player.tr)
     }
 
     public bool HasReachedPosition(Vector3 pos) {

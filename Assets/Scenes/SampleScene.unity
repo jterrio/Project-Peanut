@@ -350,6 +350,8 @@ GameObject:
   - component: {fileID: 525010012}
   - component: {fileID: 525010011}
   - component: {fileID: 525010013}
+  - component: {fileID: 525010015}
+  - component: {fileID: 525010014}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -373,7 +375,8 @@ MonoBehaviour:
   peanut:
     serializedVersion: 2
     m_Bits: 3584
-  peanutManager: {fileID: 911779372}
+  peanutManager: {fileID: 0}
+  AI: {fileID: 0}
 --- !u!4 &525010012
 Transform:
   m_ObjectHideFlags: 0
@@ -384,8 +387,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 911779373}
+  m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -401,6 +403,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5b77954cea13144fbdbcf023ca4f411, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &525010014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 525010010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a23371cfd25bb440bf62a2d55c94673, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StartPosition: {fileID: 930055627}
+  WallMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  vGridWorldSize: {x: 50, y: 50}
+  fNodeRadius: 0.75
+  fDistanceBetweenNodes: 0
+--- !u!114 &525010015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 525010010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8742fcb5b056a8048bccbd40bd31b54e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StartPosition: {fileID: 930055627}
+  TargetPosition: {fileID: 235742513}
+  maxNodesPath: 500
 --- !u!1 &570471983
 GameObject:
   m_ObjectHideFlags: 0
@@ -772,72 +808,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 903884935}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &911779372
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 911779373}
-  - component: {fileID: 911779374}
-  - component: {fileID: 911779375}
-  m_Layer: 0
-  m_Name: SCP173-Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &911779373
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 911779372}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 525010012}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &911779374
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 911779372}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8742fcb5b056a8048bccbd40bd31b54e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  StartPosition: {fileID: 930055627}
-  TargetPosition: {fileID: 235742513}
-  maxNodesPath: 500
---- !u!114 &911779375
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 911779372}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a23371cfd25bb440bf62a2d55c94673, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  StartPosition: {fileID: 930055627}
-  WallMask:
-    serializedVersion: 2
-    m_Bits: 1024
-  vGridWorldSize: {x: 50, y: 50}
-  fNodeRadius: 0.75
-  fDistanceBetweenNodes: 0
 --- !u!1 &930055622
 GameObject:
   m_ObjectHideFlags: 0
@@ -875,6 +845,7 @@ MonoBehaviour:
   speed: 10
   col: {fileID: 930055624}
   tryingToMoveTo: {x: 0, y: 0, z: 0}
+  target: {fileID: 235742506}
 --- !u!136 &930055624
 CapsuleCollider:
   m_ObjectHideFlags: 0
