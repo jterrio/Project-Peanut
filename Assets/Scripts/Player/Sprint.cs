@@ -46,68 +46,46 @@ public class Sprint : MonoBehaviour
     /// <param name="runSpeedIncrease">have much more speed the user wants to increase the base walk speed by</param>
     /// <param name="mainSpeed">The base speed of the Character</param>
     public void Sprinting(float speed, float runSpeedIncrease, float mainSpeed) {
-        if (sprintType == SprintType.TOGGLE) {
-            if (toggleRun && Input.GetKeyDown(KeyCode.LeftShift)) {
-                // You are currently running. So you need to stop running.
-                characterController.speed = mainSpeed;
-                characterController.moveState = CharacterController.MovementState.WALK;
-                toggleRun = false;
-            }
-            else if (characterController.IsMoving() && !(characterController.moveState == CharacterController.MovementState.RUN) && (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKey("left shift"))) {
-                characterController.speed += runSpeedIncrease;
-                characterController.moveState = CharacterController.MovementState.RUN;
-                toggleRun = true;
-            } else if (!characterController.IsMoving() && (characterController.moveState == CharacterController.MovementState.RUN)) {
-                // You are currently running. So you need to stop running.
-                characterController.speed = mainSpeed;
-                characterController.moveState = CharacterController.MovementState.WALK;
-                toggleRun = false;
-            }
-            //if (false) {
-            //    //todo add check if State Run but not moving
-            //} else if (stamina < staminaRequireToRun && Input.GetKeyDown(KeyCode.LeftShift) && characterController.moveState == CharacterController.MovementState.WALK) {
-            //    // do nothing because you can't start running right now
-            //} else if (Input.GetKeyDown(KeyCode.LeftShift) && characterController.moveState == CharacterController.MovementState.WALK) {
-            //    characterController.speed += runSpeedIncrease;
-            //    characterController.moveState = CharacterController.MovementState.RUN;
-            //} else if (Input.GetKeyDown(KeyCode.LeftShift)) {
-            //    // You are currently running. So you need to stop running.
-            //    characterController.speed = mainSpeed;
-            //    characterController.moveState = CharacterController.MovementState.WALK;
-            //}
-        } else if (sprintType == SprintType.ALWAYS) {
-            if (Input.GetKeyDown(KeyCode.LeftShift) && toggleRun) {
-                toggleRun = false;
-            }else if (Input.GetKeyDown(KeyCode.LeftShift) && !toggleRun) {
-                toggleRun = true;
-            }
 
-            // Change Speed
-            if (characterController.IsMoving() && toggleRun && characterController.moveState != CharacterController.MovementState.RUN && stamina > staminaRequireToRun) {
-                characterController.speed += runSpeedIncrease;
-                characterController.moveState = CharacterController.MovementState.RUN;
-            } else if((!characterController.IsMoving() || !toggleRun) && characterController.moveState != CharacterController.MovementState.WALK) {
-                characterController.speed = mainSpeed;
-                characterController.moveState = CharacterController.MovementState.WALK;
-            }
-        } else {
-            if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKey("left shift")) && characterController.moveState != CharacterController.MovementState.RUN) {
-                if (characterController.IsMoving()) {
-                    if (stamina > staminaRequireToRun) {
+        switch (sprintType) {
+            case SprintType.TOGGLE:
+                if (Input.GetKey(KeyCode.LeftShift) && characterController.IsMoving() && !(characterController.moveState == CharacterController.MovementState.RUN)) {
+                    characterController.speed += runSpeedIncrease;
+                    characterController.moveState = CharacterController.MovementState.RUN;
+                } else if (!characterController.IsMoving() && (characterController.moveState == CharacterController.MovementState.RUN)) {
+                    characterController.speed = mainSpeed;
+                    characterController.moveState = CharacterController.MovementState.WALK;
+                }
+                break;
+            case SprintType.REGULAR:
+                if ((Input.GetKey(KeyCode.LeftShift) && characterController.moveState != CharacterController.MovementState.RUN)) {
+                    if (characterController.IsMoving() && stamina > staminaRequireToRun) {
                         characterController.speed += runSpeedIncrease;
                         characterController.moveState = CharacterController.MovementState.RUN;
                     }
-                } else {
-                    // Do nothing you are not moving
+                } else if (characterController.moveState == CharacterController.MovementState.RUN && !characterController.IsMoving()) {
+                    characterController.speed = mainSpeed;
+                    characterController.moveState = CharacterController.MovementState.WALK;
                 }
-            } else if (characterController.moveState == CharacterController.MovementState.RUN && !characterController.IsMoving()) {
-                characterController.speed = mainSpeed;
-                characterController.moveState = CharacterController.MovementState.WALK;
-            }
-            if (Input.GetKeyUp(KeyCode.LeftShift)) {
-                characterController.speed = mainSpeed;
-                characterController.moveState = CharacterController.MovementState.WALK;
-            }
+                if (Input.GetKeyUp(KeyCode.LeftShift)) {
+                    characterController.speed = mainSpeed;
+                    characterController.moveState = CharacterController.MovementState.WALK;
+                }
+                break;
+            case SprintType.ALWAYS:
+                if (Input.GetKeyDown(KeyCode.LeftShift)) {
+                    toggleRun = !toggleRun;
+                }
+
+                // Change Speed
+                if (characterController.IsMoving() && toggleRun && characterController.moveState != CharacterController.MovementState.RUN && stamina > staminaRequireToRun) {
+                    characterController.speed += runSpeedIncrease;
+                    characterController.moveState = CharacterController.MovementState.RUN;
+                } else if ((!characterController.IsMoving() || !toggleRun) && characterController.moveState != CharacterController.MovementState.WALK) {
+                    characterController.speed = mainSpeed;
+                    characterController.moveState = CharacterController.MovementState.WALK;
+                }
+                break;
         }
     }
 

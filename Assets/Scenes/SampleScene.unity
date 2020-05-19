@@ -192,7 +192,7 @@ MonoBehaviour:
   staminaRefillRate: 0.5
   staminaRequireToRun: 20
   timeTillStaminaRegen: 1
-  toggleSprint: 0
+  sprintType: 2
   characterController: {fileID: 235742508}
 --- !u!136 &235742510
 CapsuleCollider:
@@ -812,7 +812,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &911779373
 Transform:
   m_ObjectHideFlags: 0
@@ -888,7 +888,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 930055622}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bf73a3156a7fe634788f13e60b740718, type: 3}
   m_Name: 
