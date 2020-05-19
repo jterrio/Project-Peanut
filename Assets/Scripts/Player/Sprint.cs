@@ -49,9 +49,15 @@ public class Sprint : MonoBehaviour
 
         switch (sprintType) {
             case SprintType.TOGGLE:
-                if (Input.GetKey(KeyCode.LeftShift) && characterController.IsMoving() && !(characterController.moveState == CharacterController.MovementState.RUN)) {
-                    characterController.speed += runSpeedIncrease;
-                    characterController.moveState = CharacterController.MovementState.RUN;
+
+                if (Input.GetKeyDown(KeyCode.LeftShift) && characterController.IsMoving()) {
+                    if (!(characterController.moveState == CharacterController.MovementState.RUN)) {
+                        characterController.speed += runSpeedIncrease;
+                        characterController.moveState = CharacterController.MovementState.RUN;
+                    } else if (characterController.moveState == CharacterController.MovementState.RUN) {
+                        characterController.speed = mainSpeed;
+                        characterController.moveState = CharacterController.MovementState.WALK;
+                    }
                 } else if (!characterController.IsMoving() && (characterController.moveState == CharacterController.MovementState.RUN)) {
                     characterController.speed = mainSpeed;
                     characterController.moveState = CharacterController.MovementState.WALK;
