@@ -22,7 +22,7 @@ public class Sprint : MonoBehaviour
     private Coroutine sprintRegenCoroutine;
     private Coroutine sprintDrainCoroutine;
 
-    public CharacterController characterController;
+    public PlayerCharacter playerController;
 
     public enum SprintType {
         REGULAR,
@@ -35,8 +35,8 @@ public class Sprint : MonoBehaviour
     }
 
     private void Update() {
-        Sprinting(characterController.speed, characterController.runSpeedIncrease, characterController.mainSpeed);
-        UpdateStamina(characterController.mainSpeed);
+        Sprinting(playerController.speed, playerController.runSpeedIncrease, playerController.mainSpeed);
+        UpdateStamina(playerController.mainSpeed);
     }
 
     /// <summary>
@@ -49,32 +49,32 @@ public class Sprint : MonoBehaviour
 
         switch (sprintType) {
             case SprintType.TOGGLE:
-                if (Input.GetKeyDown(KeyCode.LeftShift) && characterController.IsMoving()) {
-                    if (!(characterController.moveState == CharacterController.MovementState.RUN) && stamina > staminaRequireToRun) {
-                        characterController.speed += runSpeedIncrease;
-                        characterController.moveState = CharacterController.MovementState.RUN;
-                    } else if (characterController.moveState == CharacterController.MovementState.RUN) {
-                        characterController.speed = mainSpeed;
-                        characterController.moveState = CharacterController.MovementState.WALK;
+                if (Input.GetKeyDown(KeyCode.LeftShift) && playerController.IsMoving()) {
+                    if (!(playerController.moveState == PlayerCharacter.MovementState.RUN) && stamina > staminaRequireToRun) {
+                        playerController.speed += runSpeedIncrease;
+                        playerController.moveState = PlayerCharacter.MovementState.RUN;
+                    } else if (playerController.moveState == PlayerCharacter.MovementState.RUN) {
+                        playerController.speed = mainSpeed;
+                        playerController.moveState = PlayerCharacter.MovementState.WALK;
                     }
-                } else if (!characterController.IsMoving() && (characterController.moveState == CharacterController.MovementState.RUN)) {
-                    characterController.speed = mainSpeed;
-                    characterController.moveState = CharacterController.MovementState.WALK;
+                } else if (!playerController.IsMoving() && (playerController.moveState == PlayerCharacter.MovementState.RUN)) {
+                    playerController.speed = mainSpeed;
+                    playerController.moveState = PlayerCharacter.MovementState.WALK;
                 }
                 break;
             case SprintType.REGULAR:
-                if ((Input.GetKey(KeyCode.LeftShift) && characterController.moveState != CharacterController.MovementState.RUN)) {
-                    if (characterController.IsMoving() && stamina > staminaRequireToRun) {
-                        characterController.speed += runSpeedIncrease;
-                        characterController.moveState = CharacterController.MovementState.RUN;
+                if ((Input.GetKey(KeyCode.LeftShift) && playerController.moveState != PlayerCharacter.MovementState.RUN)) {
+                    if (playerController.IsMoving() && stamina > staminaRequireToRun) {
+                        playerController.speed += runSpeedIncrease;
+                        playerController.moveState = PlayerCharacter.MovementState.RUN;
                     }
-                } else if (characterController.moveState == CharacterController.MovementState.RUN && !characterController.IsMoving()) {
-                    characterController.speed = mainSpeed;
-                    characterController.moveState = CharacterController.MovementState.WALK;
+                } else if (playerController.moveState == PlayerCharacter.MovementState.RUN && !playerController.IsMoving()) {
+                    playerController.speed = mainSpeed;
+                    playerController.moveState = PlayerCharacter.MovementState.WALK;
                 }
                 if (Input.GetKeyUp(KeyCode.LeftShift)) {
-                    characterController.speed = mainSpeed;
-                    characterController.moveState = CharacterController.MovementState.WALK;
+                    playerController.speed = mainSpeed;
+                    playerController.moveState = PlayerCharacter.MovementState.WALK;
                 }
                 break;
             case SprintType.ALWAYS:
@@ -83,12 +83,12 @@ public class Sprint : MonoBehaviour
                 }
 
                 // Change Speed
-                if (characterController.IsMoving() && toggleRun && characterController.moveState != CharacterController.MovementState.RUN && stamina > staminaRequireToRun) {
-                    characterController.speed += runSpeedIncrease;
-                    characterController.moveState = CharacterController.MovementState.RUN;
-                } else if ((!characterController.IsMoving() || !toggleRun) && characterController.moveState != CharacterController.MovementState.WALK) {
-                    characterController.speed = mainSpeed;
-                    characterController.moveState = CharacterController.MovementState.WALK;
+                if (playerController.IsMoving() && toggleRun && playerController.moveState != PlayerCharacter.MovementState.RUN && stamina > staminaRequireToRun) {
+                    playerController.speed += runSpeedIncrease;
+                    playerController.moveState = PlayerCharacter.MovementState.RUN;
+                } else if ((!playerController.IsMoving() || !toggleRun) && playerController.moveState != PlayerCharacter.MovementState.WALK) {
+                    playerController.speed = mainSpeed;
+                    playerController.moveState = PlayerCharacter.MovementState.WALK;
                 }
                 break;
         }
@@ -100,18 +100,18 @@ public class Sprint : MonoBehaviour
     public void UpdateStamina(float mainSpeed) {
 
         //REGEN
-        if (characterController.moveState != CharacterController.MovementState.RUN && (sprintRegenCoroutine == null) && stamina < maxStamina) {
+        if (playerController.moveState != PlayerCharacter.MovementState.RUN && (sprintRegenCoroutine == null) && stamina < maxStamina) {
             StopDrainCoroutine();
             sprintRegenCoroutine = StartCoroutine(RegenStamina(mainSpeed));
         }
 
         //DRAIN
-        if(characterController.moveState == CharacterController.MovementState.RUN && stamina > 0 && sprintDrainCoroutine == null) {
+        if(playerController.moveState == PlayerCharacter.MovementState.RUN && stamina > 0 && sprintDrainCoroutine == null) {
             StopRegenCoroutine();
             sprintDrainCoroutine = StartCoroutine(DrainStamina(mainSpeed));
         }
         // Todo: make ui showing stamina
-        Debug.Log(stamina);
+        //Debug.Log(stamina);
     }
 
     void StopSprintCoroutines() {
@@ -135,14 +135,14 @@ public class Sprint : MonoBehaviour
 
 
     IEnumerator DrainStamina(float mainSpeed) {
-        while(stamina > 0 && characterController.moveState == CharacterController.MovementState.RUN && characterController.IsMoving()) {
+        while(stamina > 0 && playerController.moveState == PlayerCharacter.MovementState.RUN && playerController.IsMoving()) {
             yield return new WaitForSeconds(0.1f);
             stamina -= staminaDrainRate;
         }
         if(stamina < 0) {
             stamina = 0;
-            characterController.speed = mainSpeed;
-            characterController.moveState = CharacterController.MovementState.WALK;
+            playerController.speed = mainSpeed;
+            playerController.moveState = PlayerCharacter.MovementState.WALK;
         }
         sprintDrainCoroutine = null;
     }
