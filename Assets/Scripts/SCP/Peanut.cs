@@ -11,7 +11,6 @@ public class Peanut : SCP {
     public CapsuleCollider col;
     public Vector3 tryingToMoveTo;
     public GameObject target;
-
     private Coroutine moveLerpCoroutine;
 
 
@@ -79,7 +78,7 @@ public class Peanut : SCP {
         //print("In camera: " + inCamera);
         //print("LOS: " + LOS);
         //print("");
-        if(inCamera && LOS) {
+        if(inCamera && LOS && GameManager.gm.blink.isBlinking) {
             IsSeen = true;
         } else {
             IsSeen = false;

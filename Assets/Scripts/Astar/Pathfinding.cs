@@ -111,6 +111,9 @@ public class Pathfinding : MonoBehaviour {
     }
 
     bool IsPathBlocked(List<Node> path) {
+        if (GameManager.gm.blink.isBlinking) {
+            return false;
+        }
         bool isBlocked = false;
         foreach(Node n in new List<Node>(path)) {
             if (SetNodesInSight(n)) {

@@ -7,13 +7,15 @@ public class GameManager : MonoBehaviour{
     public static GameManager gm;
     public GameObject player;
     public LayerMask peanut;
+    public BlinkUI blink;
 
     public GameObject peanutManager;
     public Pathfinding AI;
 
     // Start is called before the first frame update
     void Start(){
-        if(gm == null) {
+        blink = player.GetComponent<BlinkUI>();
+        if (gm == null) {
             gm = this;
         }else if(gm != this) {
             Destroy(this);

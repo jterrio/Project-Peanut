@@ -5,13 +5,18 @@ using UnityEngine;
 public class BlinkUI : MonoBehaviour
 {
     public GameObject blinking;
-    public float blinkTime = 1.5f;
+    public bool isBlinking = false;
+    public float blinkTime = 0.15f;
+    private CanvasGroup canvasGroup;
 
+    void Start() {
+        canvasGroup = blinking.GetComponent<CanvasGroup>();
+    }
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space)) {
-            StartCoroutine(Blinking(blinking.GetComponent<CanvasGroup>()));
+            StartCoroutine(Blinking(canvasGroup));
         }
     }
 
@@ -23,27 +28,27 @@ public class BlinkUI : MonoBehaviour
     public IEnumerator Blinking(CanvasGroup canvGroup)
     {
         float counter = 0f;
-        float oneThirdBlink = blinkTime / 3;
-
+        float oneThirdBlink = blinkTime/3;
+        isBlinking = true;
         //Closing Eyes
         while (counter < oneThirdBlink) {
             counter += Time.deltaTime;
-            canvGroup.alpha = Mathf.Lerp(0, 1, counter / oneThirdBlink);
-
+            canvGroup.alpha = Mathf.Lerp(0, 1f, counter / oneThirdBlink);
+            yield return null;
         }
         //Time with eyes closed
-        //Todo: Turn off raycast for Player so Peanut can move
         counter = 0f;
-        while (counter < oneThirdBlink) {
+        while (counter < (oneThirdBlink)) {
             counter += Time.deltaTime;
+            yield return null;
         }
-        //Todo: Turn on raycast for Player so Peanut can not move
         //Opening Eyes
+        isBlinking = false;
         counter = 0f;
         while (counter < oneThirdBlink) {
             counter += Time.deltaTime;
-            canvGroup.alpha = Mathf.Lerp(1, 0, counter / oneThirdBlink);
-            yield return null; //Because we don't need a return value.
+            canvGroup.alpha = Mathf.Lerp(1f, 0, counter / oneThirdBlink);
+            yield return null;
         }
     }
 }
