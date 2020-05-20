@@ -4,19 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Peanut : SCP {
+public class Peanut : AggroSCP {
 
     public bool IsSeen { get; set; } = false;
-    public float speed;
     public CapsuleCollider col;
-    public Vector3 tryingToMoveTo;
-    public GameObject target;
-
-    private Coroutine moveLerpCoroutine;
-
-
-
-    public Action action;
 
     void Start(){
         scpID = "173";
@@ -95,9 +86,9 @@ public class Peanut : SCP {
     }
 
 
-    IEnumerator MoveLerp() {
+    protected override IEnumerator MoveLerp() {
         yield return new WaitForSeconds(0.1f);
-        List<Vector3> finalPath = GameManager.gm.AI.FindPath(transform.position, target.transform.position);  
+        List<Vector3> finalPath = GameManager.gm.AI.FindPath(transform.position, target.transform.position, 3);  
         while (finalPath.Count > 0) {
             float distance = 0f;
             Vector3 current = transform.position;
@@ -126,14 +117,10 @@ public class Peanut : SCP {
         moveLerpCoroutine = null;
     }
 
-    void Move() {
+    protected override void Move() {
         if (!IsSeen && moveLerpCoroutine == null && target != null) {
             moveLerpCoroutine = StartCoroutine(MoveLerp());
         }
-    }
-
-    public bool HasReachedPosition(Vector3 pos) {
-        return Vector3.Distance(transform.position, pos) <= 0.1f;
     }
 
     

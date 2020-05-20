@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterController : MonoBehaviour {
+public class PlayerCharacter : MonoBehaviour {
 
     [Header("Movement and Speeds")]
     public float speed = 10.0f;
