@@ -7,16 +7,20 @@ using UnityEngine.AI;
 public class Peanut : AggroSCP {
 
     public bool IsSeen { get; set; } = false;
+
+    [HideInInspector]
     public CapsuleCollider col;
 
     void Start(){
         scpID = "173";
         c = Classification.Euclid;
+        col = GetComponent<CapsuleCollider>();
     }
 
     void Update(){
         CanBeSeen();
         Move();
+        AttemptDamage();
     }
 
     void CanBeSeen() {
@@ -123,5 +127,11 @@ public class Peanut : AggroSCP {
         }
     }
 
-    
+    public override void AttemptDamage() {
+        if (!IsSeen) {
+            base.AttemptDamage();
+        }
+    }
+
+
 }

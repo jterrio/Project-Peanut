@@ -6,9 +6,8 @@ public class GameManager : MonoBehaviour{
 
     public static GameManager gm;
     public GameObject player;
+    public PlayerCharacter pc;
     public LayerMask peanut;
-
-    public GameObject peanutManager;
     public Pathfinding AI;
 
     // Start is called before the first frame update
@@ -19,5 +18,6 @@ public class GameManager : MonoBehaviour{
             Destroy(this);
         }
         AI = GetComponent<Pathfinding>();
+        pc = player.GetComponent<PlayerCharacter>();
     }
 }

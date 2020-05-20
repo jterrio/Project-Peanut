@@ -4,10 +4,15 @@ using UnityEngine;
 
 public abstract class AggroSCP : SCP {
 
+    [Header("Movement")]
     public float speed;
     protected Coroutine moveLerpCoroutine;
-    public GameObject target;
     protected Rigidbody rb;
+
+    [Header("Targets and Damage")]
+    public GameObject target;
+    public float damDistance;
+    public float damage;
 
     protected virtual IEnumerator MoveLerp() {
         yield return new WaitForSeconds(0.1f);
@@ -31,6 +36,18 @@ public abstract class AggroSCP : SCP {
 
     public bool HasReachedPosition(Vector3 pos) {
         return Vector3.Distance(transform.position, pos) <= 0.1f;
+    }
+
+    public virtual void AttemptDamage() {
+        if (target != null) {
+            if (Vector3.Distance(transform.position, target.transform.position) <= damDistance) {
+                DealDamage();
+            }
+        }
+    }
+
+    void DealDamage() {
+        GameManager.gm.pc.TakeDamage(damage);
     }
 
 }

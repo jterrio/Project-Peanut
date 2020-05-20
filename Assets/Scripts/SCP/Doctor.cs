@@ -12,6 +12,7 @@ public class Doctor : AggroSCP {
 
     void Update() {
         Move();
+        AttemptDamage();
     }
 
 }

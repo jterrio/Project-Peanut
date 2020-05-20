@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!33 &7942390
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -249,6 +249,8 @@ MonoBehaviour:
   c: 0
   speed: 6
   target: {fileID: 235742506}
+  damDistance: 2
+  damage: 999
 --- !u!1 &235742506
 GameObject:
   m_ObjectHideFlags: 0
@@ -302,6 +304,8 @@ MonoBehaviour:
   speed: 5
   runSpeedIncrease: 3
   mainSpeed: 0
+  health: 100
+  maxHealth: 100
   moveState: 0
 --- !u!114 &235742509
 MonoBehaviour:
@@ -523,10 +527,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 235742506}
+  pc: {fileID: 0}
   peanut:
     serializedVersion: 2
     m_Bits: 3584
-  peanutManager: {fileID: 0}
   AI: {fileID: 0}
 --- !u!4 &525010012
 Transform:
@@ -995,6 +999,8 @@ MonoBehaviour:
   c: 0
   speed: 10
   target: {fileID: 235742506}
+  damDistance: 1.5
+  damage: 999
   col: {fileID: 930055624}
 --- !u!136 &930055624
 CapsuleCollider:
