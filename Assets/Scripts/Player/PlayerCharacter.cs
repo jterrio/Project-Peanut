@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterController : MonoBehaviour {
+public class PlayerCharacter : MonoBehaviour {
 
     [Header("Movement and Speeds")]
     public float speed = 10.0f;
     public float runSpeedIncrease = 5.0f;
     public float mainSpeed;
+
+    [Header("Health")]
+    public float health = 100f;
+    public float maxHealth = 100f;
+
     private float translation;
     private float straffe;
     public MovementState moveState;
@@ -47,5 +52,24 @@ public class CharacterController : MonoBehaviour {
 
     public bool IsMoving() {
         return (translation != 0 || straffe != 0) ;
+    }
+
+    public void TakeDamage(float d) {
+        health -= d;
+        if(health <= 0) {
+            health = 0;
+            Dead();
+        }
+    }
+
+    public void Heal(float d) {
+        health += d;
+        if(health > maxHealth) {
+            health = maxHealth;
+        }
+    }
+
+    public void Dead() {
+        print("You have died!");
     }
 }
