@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour{
     public LayerMask peanut;
 
     public GameObject peanutManager;
+    public Pathfinding AI;
 
     // Start is called before the first frame update
     void Start(){
@@ -17,5 +18,6 @@ public class GameManager : MonoBehaviour{
         }else if(gm != this) {
             Destroy(this);
         }
+        AI = GetComponent<Pathfinding>();
     }
 }

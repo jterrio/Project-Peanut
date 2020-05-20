@@ -10,7 +10,6 @@ public class Pathfinding : MonoBehaviour {
     private Node StartNode;
     private Node TargetNode;
     private Coroutine PathCoroutine;
-    private bool stopCoroutine = false;
     public int maxNodesPath = 500;
 
     private void Awake()//When the program starts
@@ -18,22 +17,9 @@ public class Pathfinding : MonoBehaviour {
         GridReference = GetComponent<Grid>();//Get a reference to the game manager
     }
 
-    private void Update()//Every frame
-    {
-        if(PathCoroutine == null) {
-            PathCoroutine = StartCoroutine(FindPath(StartPosition.position, TargetPosition.position));
-        }else if (stopCoroutine) {
-            stopCoroutine = false;
-            StopCoroutine(PathCoroutine);
-            PathCoroutine = StartCoroutine(FindPath(StartPosition.position, TargetPosition.position));
-        }
-        //Find a path to the goal
-    }
-
-    IEnumerator FindPath(Vector3 a_StartPos, Vector3 a_TargetPos) {
+    public List<Vector3> FindPath(Vector3 a_StartPos, Vector3 a_TargetPos) {
         List<Node> a = new List<Node>();
         int times = 0;
-        yield return new WaitForSeconds(0.1f);
         List<List<Node>> Paths = new List<List<Node>>();
 
         while (times < 3) {
@@ -64,10 +50,8 @@ public class Pathfinding : MonoBehaviour {
                 {
                     a = GetFinalPathObstructed(StartNode, TargetNode);//Calculate the final path
                     if (!IsPathBlocked(a)) {
-                        GridReference.FinalPath = a;
                         ClearLOSNodes();
-                        stopCoroutine = true;
-                        yield return null;
+                        return NodesToPoints(a);
                     } else {
                         break;
                     }
@@ -97,7 +81,6 @@ public class Pathfinding : MonoBehaviour {
                 }
             }
             Paths.Add(a);
-            yield return null;
         }
 
         float distanceFromTarget = 999999;
@@ -115,11 +98,17 @@ public class Pathfinding : MonoBehaviour {
             }
             t++;
         }
-        GridReference.FinalPath = Paths[r];
         ClearLOSNodes();
-        stopCoroutine = true;
+        return NodesToPoints(Paths[r]);
     }
 
+    List<Vector3> NodesToPoints(List<Node> nodes) {
+        List<Vector3> a = new List<Vector3>();
+        foreach(Node n in nodes) {
+            a.Add(n.vPosition);
+        }
+        return a;
+    }
 
     bool IsPathBlocked(List<Node> path) {
         bool isBlocked = false;
@@ -217,7 +206,7 @@ public class Pathfinding : MonoBehaviour {
         }
         GridReference.BlockedPath.Clear();
     }
-
+    /*
     public Vector3[] GetCornerPath() {
         List<Vector3> corners = new List<Vector3>();
         if (GridReference.FinalPath == null) {
@@ -227,7 +216,7 @@ public class Pathfinding : MonoBehaviour {
             corners.Add(n.vPosition);
         }
         return corners.ToArray();
-    }
+    }*/
 
 
 
