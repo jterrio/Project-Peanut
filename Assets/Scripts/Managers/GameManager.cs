@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour{
 
     // Start is called before the first frame update
     void Start(){
-        blink = player.GetComponent<BlinkUI>();
         if (gm == null) {
             gm = this;
         }else if(gm != this) {
@@ -21,5 +20,6 @@ public class GameManager : MonoBehaviour{
         }
         AI = GetComponent<Pathfinding>();
         pc = player.GetComponent<PlayerCharacter>();
+        blink = player.GetComponent<BlinkUI>();
     }
 }

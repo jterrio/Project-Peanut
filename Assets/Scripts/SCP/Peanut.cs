@@ -24,7 +24,10 @@ public class Peanut : AggroSCP {
     }
 
     void CanBeSeen() {
-        
+        if (GameManager.gm.blink.isBlinking) {
+            IsSeen = false;
+            return;
+        }
         bool inCamera = false;
         bool LOS = false;
 
@@ -74,7 +77,7 @@ public class Peanut : AggroSCP {
         //print("In camera: " + inCamera);
         //print("LOS: " + LOS);
         //print("");
-        if(inCamera && LOS && GameManager.gm.blink.isBlinking) {
+        if(inCamera && LOS) {
             IsSeen = true;
         } else {
             IsSeen = false;
