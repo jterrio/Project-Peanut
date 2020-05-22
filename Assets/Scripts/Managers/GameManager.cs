@@ -8,16 +8,18 @@ public class GameManager : MonoBehaviour{
     public GameObject player;
     public PlayerCharacter pc;
     public LayerMask peanut;
+    public BlinkUI blink;
     public Pathfinding AI;
 
     // Start is called before the first frame update
     void Start(){
-        if(gm == null) {
+        if (gm == null) {
             gm = this;
         }else if(gm != this) {
             Destroy(this);
         }
         AI = GetComponent<Pathfinding>();
         pc = player.GetComponent<PlayerCharacter>();
+        blink = player.GetComponent<BlinkUI>();
     }
 }

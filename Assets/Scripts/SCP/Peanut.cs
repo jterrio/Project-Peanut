@@ -24,7 +24,10 @@ public class Peanut : AggroSCP {
     }
 
     void CanBeSeen() {
-        
+        if (GameManager.gm.blink.isBlinking) {
+            IsSeen = false;
+            return;
+        }
         bool inCamera = false;
         bool LOS = false;
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Sprint : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class Sprint : MonoBehaviour
     [Tooltip("Regular is regular, Always is a toggle where if you start moving you run if you can, Toggle is if you are moving and press sprint you run till you stop moving and have to press it again.")]
     public SprintType sprintType;
     private bool toggleRun = false;
+    public Image sprintBar;
 
     //COROUTINES FOR SPRINTING
     private Coroutine sprintRegenCoroutine;
@@ -37,6 +39,13 @@ public class Sprint : MonoBehaviour
     private void Update() {
         Sprinting(playerController.speed, playerController.runSpeedIncrease, playerController.mainSpeed);
         UpdateStamina(playerController.mainSpeed);
+        sprintBar.fillAmount = stamina / maxStamina;
+        //ToDo: finish, May not be the right checks and may need to have the parent object checked instead of sprintBar.
+        if(stamina == maxStamina && sprintBar.isActiveAndEnabled) {
+            //ToDo: Disable sprintBar since it is full and not needed
+        }else if (stamina != maxStamina && !sprintBar.isActiveAndEnabled) {
+            //ToDo: Enable sprintBar since it is being used and the user needs to see it.
+        }
     }
 
     /// <summary>
@@ -144,6 +153,7 @@ public class Sprint : MonoBehaviour
             playerController.speed = mainSpeed;
             playerController.moveState = PlayerCharacter.MovementState.WALK;
         }
+        sprintBar.fillAmount = stamina / maxStamina;
         sprintDrainCoroutine = null;
     }
 
